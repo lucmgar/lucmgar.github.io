@@ -2,13 +2,15 @@
 <html>
 <head>
   <!-- Other meta tags, CSS links, and title -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9187050822014009"
+     crossorigin="anonymous"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <h1>10-22-23 - Getting SDL2 Linking Working</h1>
+  <h1>2023-10-22 - Getting SDL2 Linking Working</h1>
   <p>A few months back, I decided I wanted to branch out from the C++ standard library. After looking around, I decided that SDL2 seemed to be the right fit for me as it offered a large number of learning opportunities but still was high-level enough that I could see my results in a reasonable time. </p>
 
   <p>C++ linking was a daunting task for me to overcome. Somehow, no matter what tutorial I followed, no matter how much I threw at the problem, and no matter much I begged ChatGPT to help me out with whatever new error message appeared, I couldn't get it to work. </p>
@@ -16,11 +18,10 @@
   <p>That was the case as I took on the task every couple of months or so until I'd get busy with something else and leave the project unfinished. </p>
     
   <p>Recently, however, I came back to it and was determined to get it fixed and working once and for all so I could actually start the learning process of graphical C++ applications. I'm running Linux Mint 21.2 Cinnamon and here's what worked for me:</p>
-
   <ol>
     <li><p>Make sure if you've tried doing this before you completely clear out the '/usr/local/' of anything name SDL2. I didn't realize it at the time but this is what made every other solution I tried fail. I'm guessing the system was trying to link to one of the (likely mangled) SDL2 installations I had there from one of my previous attempts and it threw an error I couldn't make sense of.</p></li>
     <li><p>Use your system's package manager to install SDL2. For me, this was 'sudo apt-get install libsdl2-dev' (NOTE: You might be tempted to install and compile SDL2 yourself. Don't do this unless you know what you're doing because you'll likely get 'error initializing SDL: dsp: No such audio device' which is a pain to get taken care of. Learn from my mistakes, use your system's package manager. )</p><p>Again, this step won't do you any good if you haven't purged other installations. If you haven't already, go back and do that.</p></li>
-    <li><p>Write a sample SDL2 C++ program. As I haven't used SDL2, I had Chat GPT write a placeholder one until I could get a better test program running. The code for it is here: 
+    <li><p>Write a sample SDL2 C++ program. As I haven't used SDL2, I had ChatGPT write a placeholder one until I could get a better test program running. The code for it is here: 
       <code><pre>
         #include <SDL.h>
         #include <iostream>
@@ -137,6 +138,6 @@
 
 <footer>
     <p>Lucas Garcia - 2023</p>
-    <a href="index.html">Home</a>
+    <a href="../index.html">Home</a>
 </footer>
 </html>
