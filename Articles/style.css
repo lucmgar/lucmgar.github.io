@@ -1,0 +1,30 @@
+body {
+    background: #333638;
+    padding-left: 10%;
+
+
+    max-width: 80%;
+    margin: 0;
+    height: 100vh;
+    color: white;
+    font-family: monospace;
+    font-size: large;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  pre code {
+    background-color: #2e2e2e;
+    border: 1px solid #999;
+    display: block;
+    padding: 20px;
+
+  }
+
+  footer {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 20px;
+  }

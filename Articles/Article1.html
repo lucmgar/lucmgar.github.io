@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Other meta tags, CSS links, and title -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <h1>10-22-23 - Getting SDL2 Linking Working</h1>
+  <p>A few months back, I decided I wanted to branch out from the C++ standard library. After looking around, I decided that SDL2 seemed to be the right fit for me as it offered a large number of learning opportunities but still was high-level enough that I could see my results in a reasonable time. </p>
+
+  <p>C++ linking was a daunting task for me to overcome. Somehow, no matter what tutorial I followed, no matter how much I threw at the problem, and no matter much I begged ChatGPT to help me out with whatever new error message appeared, I couldn't get it to work. </p>
+    
+  <p>That was the case as I took on the task every couple of months or so until I'd get busy with something else and leave the project unfinished. </p>
+    
+  <p>Recently, however, I came back to it and was determined to get it fixed and working once and for all so I could actually start the learning process of graphical C++ applications. I'm running Linux Mint 21.2 Cinnamon and here's what worked for me:</p>
+
+  <ol>
+    <li><p>Make sure if you've tried doing this before you completely clear out the '/usr/local/' of anything name SDL2. I didn't realize it at the time but this is what made every other solution I tried fail. I'm guessing the system was trying to link to one of the (likely mangled) SDL2 installations I had there from one of my previous attempts and it threw an error I couldn't make sense of.</p></li>
+    <li><p>Use your system's package manager to install SDL2. For me, this was 'sudo apt-get install libsdl2-dev' (NOTE: You might be tempted to install and compile SDL2 yourself. Don't do this unless you know what you're doing because you'll likely get 'error initializing SDL: dsp: No such audio device' which is a pain to get taken care of. Learn from my mistakes, use your system's package manager. )</p><p>Again, this step won't do you any good if you haven't purged other installations. If you haven't already, go back and do that.</p></li>
+    <li><p>Write a sample SDL2 C++ program. As I haven't used SDL2, I had Chat GPT write a placeholder one until I could get a better test program running. The code for it is here: 
+      <code><pre>
+        #include <SDL.h>
+        #include <iostream>
+        #include <vector>
+          
+        struct Rectangle {
+            int x, y, width, height;
+            Uint8 r, g, b;
+        };
+          
+        int main(int argc, char* argv[]) {
+            const int SCREEN_WIDTH = 800;
+            const int SCREEN_HEIGHT = 600;
+          
+            SDL_Init(SDL_INIT_VIDEO);
+          
+            SDL_Window* window = SDL_CreateWindow("SDL Testing", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
+                SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+            if (!window) {
+                std::cerr << "Window creation failed: " << SDL_GetError() << std::endl;
+                SDL_Quit();
+                return 1;
+            }
+          
+            SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+            if (!renderer) {
+                std::cerr << "Renderer creation failed: " << SDL_GetError() << std::endl;
+                SDL_DestroyWindow(window);
+                SDL_Quit();
+                return 1;
+            }
+          
+            std::vector<Rectangle> rectangles;
+          
+            SDL_Event event;
+            bool quit = false;
+            bool drawing = false;
+            Rectangle currentRect;
+          
+            while (!quit) {
+                while (SDL_PollEvent(&event) != 0) {
+                    if (event.type == SDL_QUIT) {
+                        quit = true;
+                    } else if (event.type == SDL_MOUSEBUTTONDOWN) {
+                         if (event.button.button == SDL_BUTTON_LEFT) {
+                            drawing = true;
+                            currentRect.x = event.button.x;
+                            currentRect.y = event.button.y;
+                            currentRect.width = 0;
+                            currentRect.height = 0;
+                            currentRect.r = rand() % 256;
+                            currentRect.g = rand() % 256;
+                            currentRect.b = rand() % 256;
+                        }
+                    } else if (event.type == SDL_MOUSEMOTION && drawing) {
+                        currentRect.width = event.motion.x - currentRect.x;
+                        currentRect.height = event.motion.y - currentRect.y;
+                     } else if (event.type == SDL_MOUSEBUTTONUP && drawing) {
+                        drawing = false;
+                        rectangles.push_back(currentRect);
+                    }
+                }
+          
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                SDL_RenderClear(renderer);
+          
+                for (const Rectangle& rect : rectangles) {
+                    SDL_SetRenderDrawColor(renderer, rect.r, rect.g, rect.b, 255);
+                    SDL_Rect sdlRect = { rect.x, rect.y, rect.width, rect.height };
+                    SDL_RenderFillRect(renderer, &sdlRect);
+                 }
+          
+                SDL_RenderPresent(renderer);
+            }
+          
+            SDL_DestroyRenderer(renderer);
+            SDL_DestroyWindow(window);
+            SDL_Quit();
+          
+            return 0;
+        }
+          
+      </pre></code></p></li>
+
+      <li><p>Now that you have SDL installed and a sample C++ program ready, lets get it compiled. For me, this was always the most complicated part.</p>
+      <p>This is the command that ended up working for me</p><pre><code>g++ /home/lucmgar/Documents/sdltest.cpp -o /home/lucmgar/Documents/sdltest -lSDL2 -I/usr/include/SDL2</code></pre>
+      <p>A more generic form is: </p><pre><code>g++ /path/to/your/code.cpp -o /where/you/want/your/program -lSDL2 -I/where/your/SDL2/installation/is/located</code></pre>
+      </li>
+
+      <li><p> If it worked, you should see a new program file in your specified directory. Double clicking it or using the ./yourprogramname command should allow you to run it.</p>
+      <p>My next step was to make a more generic form of Step 4 to make sure I could use this for a number of future projects. As I used the editor 'Sublime Text' for this whole project, I thought creating a build config for it would be the best way to do this.</p>
+      <p>I'm not experience with JSON (not yet at least) so I asked ChatGPT to write me a more generic form of my earlier command as a Sublime Text build config. It gave me: </p><pre><code>
+      {
+          "shell_cmd": "g++ $file -o ${file_path}/${file_base_name} -lSDL2 -I/usr/include/SDL2",
+          "working_dir": "$file_path",
+          "selector": "source.c, source.c++",
+          "variants": [
+              {
+                  "name": "Run",
+                  "shell_cmd": "./${file_base_name}"
+              }
+          ]
+      }
+      
+        
+      </code></pre>
+      </li>
+
+  </ol>
+
+  <p>Of course, this is far from my final process. At the moment it only takes one file in and is not a long-term solution. Rather, it serves as a foot in the door for future projects. This process taught me a lot about how linking work in C++ and got me more motivated to try out other third-party C++ libraries. </p>
+
+</body>
+
+<footer>
+    <p>Lucas Garcia - 2023</p>
+    <a href="index.html">Home</a>
+</footer>
+</html>

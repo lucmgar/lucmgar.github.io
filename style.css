@@ -3,19 +3,50 @@ body {
   padding: 0 24px;
   margin: 0;
   height: 100vh;
-  color: white;;
+  color: white;
+  font-family: monospace;
   justify-content: center;
   align-items: center;
 }
+
+
 
 h1 {
   justify-content: center;
   display: flex;
 }
 
-.disclaimer, .links {
+.main_info{
+  font-size: x-large;
   justify-content: center;
+  align-items:center;
   display: flex;
+  flex-direction: column;
+}
+
+.articles{
+  list-style-type: none;
+  font-weight: 500;
+  font-size: large;
+  align-items:center;
+  display: flex;
+  justify-content: center;
+  line-height: 2rem;
+  margin-top: 5%;
+  margin-left: -2%;
+}
+
+.projects{
+  list-style-type: none;
+  font-weight: 500;
+  font-size: large;
+  line-height: 2rem;
+  margin-top: 5%;
+  margin-left: 20%;
+}
+
+.links{
+  padding:20px;
 }
 
 a:link {
@@ -41,3 +72,5 @@ a:active {
   background-color: transparent;
   text-decoration: underline;
 }
+
+
